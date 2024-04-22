@@ -10,10 +10,10 @@ const app = express();
 
 const corsOptions = {
   	origin: ['http://localhost:3000', 'http://localhost:5000', 'https://c2aco875.caspio.com'],
-};
+}
 
-app.use(cors(corsOptions));
-app.use(express.json());
+app.use(cors(corsOptions))
+app.use(express.json())
 
 //route for filling in pdf
   // takes a post body like  {  "veteranFirstName": "John",  "veteranLastName": "Doe"} , must have header - Content-Type application/json
@@ -22,16 +22,16 @@ app.post('/peg-pdf-fill-and-send', async (req, res) => {
 
 	try {
 		// Path to your PDF file
-		const pdfFilePath = 'agreement_blank.pdf';
-		const pdfOutputFilePath = 'agreement_filled.pdf';
-		const requestBody = req.body;
+		const pdfFilePath = 'agreement_blank.pdf'
+		const pdfOutputFilePath = 'agreement_filled.pdf'
+		const requestBody = req.body
 
 		if (!pdfFilePath || !requestBody) {
-			return res.status(400).json({ error: 'Missing required parameters' });
+			return res.status(400).json({ error: 'Missing required parameters' })
 		}
 
 		// Read the existing PDF file
-		const dataBuffer = await fs.readFile(pdfFilePath);
+		const dataBuffer = await fs.readFile(pdfFilePath)
 		const pdfDoc = await PDFDocument.load(dataBuffer)
 		const form = pdfDoc.getForm()
 
@@ -48,7 +48,7 @@ app.post('/peg-pdf-fill-and-send', async (req, res) => {
 		console.log("field names:", await getFormFieldNames())
 
 		// Log the received metadata
-		console.log('Received request body:', req.body);
+		console.log('Received request body:', req.body)
 
 		const fieldsToFill = [
 			{name: "Agreement Date", value: requestBody.agreementDate},
@@ -65,22 +65,22 @@ app.post('/peg-pdf-fill-and-send', async (req, res) => {
 			if (pdfTextField) pdfTextField.setText(field.value)
 		}
 
-		const pdfBytes = await pdfDoc.save();
-		await fs.writeFile(pdfOutputFilePath, pdfBytes);
-		console.log('PDF created with filled metadata!');
+		const pdfBytes = await pdfDoc.save()
+		await fs.writeFile(pdfOutputFilePath, pdfBytes)
+		console.log('PDF created with filled metadata!')
 
 		// Respond with a success message
 		res.status(200).json({
 			success: true,
 			message: 'PDF filled successfully',
-		});
+		})
 	} catch (error) {
-		console.error('Error:', error);
-		res.status(500).json({ error: 'Failed to fill PDF' });
+		console.error('Error:', error)
+		res.status(500).json({ error: 'Failed to fill PDF' })
 	}
-});
+})
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
+  console.log(`Server is running on port ${PORT}.`)
+})
